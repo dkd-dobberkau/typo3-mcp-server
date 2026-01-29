@@ -187,8 +187,7 @@ class WorkspaceContextService
             
             // Use DataHandler to create the workspace
             $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-            $dataHandler->admin = true; // Admin mode to bypass restrictions
-            $dataHandler->bypassWorkspaceRestrictions = true;
+            $dataHandler->bypassAccessCheckForRecords = true; // Bypass access restrictions
             
             $newId = 'NEW' . uniqid();
             $dataMap = [
