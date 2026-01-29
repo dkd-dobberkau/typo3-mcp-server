@@ -6,6 +6,7 @@ namespace Hn\McpServer\Service;
 
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Schema\Capability\TcaSchemaCapability;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -148,7 +149,8 @@ class TableAccessService implements SingletonInterface
         }
         
         // Check workspace capability (required for write operations)
-        $info['workspace_capable'] = BackendUtility::isTableWorkspaceEnabled($table);
+        $info['workspace_capable'] = $this->tcaSchemaFactory->has($table)
+            && $this->tcaSchemaFactory->get($table)->hasCapability(TcaSchemaCapability::Workspace);
         if ($requireWorkspaceCapability && !$info['workspace_capable']) {
             $info['reasons'][] = 'Table is not workspace-capable (required for write operations)';
             return $info;
