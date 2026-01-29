@@ -256,10 +256,15 @@ class TableAccessService implements SingletonInterface
         // If a specific type is provided and the schema supports sub-schemas
         if (!empty($type) && $schema->hasSubSchema($type)) {
             $subSchema = $schema->getSubSchema($type);
-            
+
             // Check if this type uses subtypes (e.g., plugins using list_type)
-            $subtypeField = $subSchema->getSubTypeDivisorField();
-            
+            // In TYPO3 v14+, use TCA directly as getSubTypeDivisorField() was removed
+            $tca = $GLOBALS['TCA'][$table] ?? [];
+            $subtypeFieldName = $tca['types'][$type]['subtype_value_field'] ?? null;
+            if ($subtypeFieldName !== null && $schema->hasField($subtypeFieldName)) {
+                $subtypeField = $schema->getField($subtypeFieldName);
+            }
+
             // Get fields from the sub-schema
             foreach ($subSchema->getFields() as $field) {
                 $fieldName = $field->getName();
